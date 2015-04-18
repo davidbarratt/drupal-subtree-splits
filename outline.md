@@ -3,7 +3,19 @@
 ## Outline
 
 ### Dependency Management
+[npm](https://www.npmjs.com/)
+[bower](http://bower.io/)
+[bundler](http://bundler.io/)
 #### [Composer](https://getcomposer.org)
+Composer is a tool for dependency management in PHP. It allows you to declare
+the dependent libraries your project needs and it will install them
+in your project for you.
+
+### Consumers and Providers
+
+#### Consumers
+Projects that consume libraries that via Composer.
+
 Basic `composer.json` file
 ```json
   {
@@ -19,9 +31,6 @@ Executing `composer install` will download the `guzzle` into `./vendor`
 [Guzzle's](http://guzzlephp.org) `composer.json` looks like this:
 ```json
 {
-  "name": "guzzlehttp/guzzle",
-  "type": "library",
-  "license": "MIT",
   "require": {
       "php": ">=5.4.0",
       "guzzlehttp/ringphp": "~1.0"
@@ -50,12 +59,9 @@ This has completely changed the game. No longer are we reinventing the wheel.
 Drupal to "get off the island". We now use a large number of third-party
 libraries that would have been inaccessible before.
 
-Drupal 8's `composer.json` file looks like this:
+Drupal 8's `core/composer.json` file looks like this:
 ```json
 {
-  "name": "drupal/core",
-  "type": "drupal-core",
-  "license": "GPL-2.0+",
   "require": {
     "php": ">=5.4.5",
     "sdboyer/gliph": "0.1.*",
@@ -89,8 +95,21 @@ Drupal 8's `composer.json` file looks like this:
 }
 ```
 
-How do we allow users to use Drupal in the same way we use all these libraries?
+We can now consume all of these dependencies and all of these libraries'
+dependencies.
 
+(something about composer.lock here)
+
+[#1475510 Remove external dependencies from the core repo and let Composer
+manage the dependencies instead](https://www.drupal.org/node/1475510)
+We should remove the `core/vendor` directory from the repository. This allows us
+to manage dependencies without *huge* patches. The only thing that needs to
+happen, is that the test bot & packaging script needs to execute
+`cd core; composer install;` on every run so the dependencies are available
+during testing and are included in any downloadable packages. 
+
+
+<!--
 # Frameworks
 Symfony
 Laravel
@@ -111,3 +130,4 @@ Packagist
   * How?
 * Others can use these splits in their own projects
 * Benefits the community can get from offering these splits
+-->
