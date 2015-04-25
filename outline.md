@@ -142,7 +142,7 @@ Composer ignores the `composer.lock` in all of your dependencies.
 Because of this, many committing the `composer.lock` file is optional and many
 libraries (like Guzzle) do not.
 
-##### Drupal Core as Consumer
+##### Drupal Core as a Consumer
 
 ###### Proposal #1:
 [#1475510 Remove external dependencies from the core repo and let Composer
