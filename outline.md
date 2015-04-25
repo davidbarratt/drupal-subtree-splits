@@ -142,7 +142,9 @@ Composer ignores the `composer.lock` in all of your dependencies.
 Because of this, many committing the `composer.lock` file is optional and many
 libraries (like Guzzle) do not.
 
-##### Proposal #1:
+##### Drupal Core as Consumer
+
+###### Proposal #1:
 [#1475510 Remove external dependencies from the core repo and let Composer
 manage the dependencies instead](https://www.drupal.org/node/1475510)
 We should remove the `core/vendor` directory from the repository. This allows us
@@ -157,7 +159,7 @@ dependency from it's cache into your project.
 This also prevents Composer users from having to have two copies of the
 dependencies (more on this later).
 
-##### Proposal #2:
+###### Proposal #2:
 [#2444615 Move phpunit and mink to require-dev](https://www.drupal.org/node/2444615)
 There are some dependencies that are not needed unless you are running tests.
 PHPUnit, Mink, etc. These dependencies could be moved to Comoposer's
@@ -213,7 +215,7 @@ The later command excludes the dependencies in `require-dev`. This makes our
 package smaller and more secure since most Drupal users do not need these
 dependencies, there is little reason for them being in downloaded packages.
 
-##### Proposal #3:
+###### Proposal #3:
 **Require Drush as a dev dependency**
 You can now install drush on a [per-project basis](http://docs.drush.org/en/master/install/).
 This means drush can be managed the same way PHPUnit, Mink, etc. is managed.
