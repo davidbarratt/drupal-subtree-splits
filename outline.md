@@ -173,6 +173,9 @@ dependency from it's cache into your project.
 This also prevents Composer users from having to have two copies of the
 dependencies (more on this later).
 
+Also, allows us to run tests against different version of dependencies.
+(i.e. Symfony 2.6 and 2.7, or whatever Drupal wants to be compiable with).
+
 ###### Proposal #2:
 [#2444615 Move phpunit and mink to require-dev](https://www.drupal.org/node/2444615)
 There are some dependencies that are not needed unless you are running tests.
