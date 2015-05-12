@@ -10,6 +10,16 @@ Drupal core: Everything in the `/core` folder.
 [npm](https://www.npmjs.com/)
 [bower](http://bower.io/)
 [bundler](http://bundler.io/)
+
+Drupal actually has had a dependency management tool for a long time. It's one
+of Drupal's best features. Module developers have the ability to declare
+dependencies on other modules. This single feature, I believe, is responsible
+for the huge number of "API" modules (Chaos Tools, Entity API, Libraries, etc.).
+There is no other major CMS (that I am aware of) that has this feature.
+
+What if we want to go beyond modules and declare dependencies for almost
+anything?
+
 #### [Composer](https://getcomposer.org)
 Composer is a tool for dependency management in PHP. It allows you to declare
 the dependent libraries your project needs and it will install them
@@ -259,11 +269,16 @@ package. What makes a package a provider? A name.
 It's a good practice to give a name and a description to every package, even if
 it's never going to be consumed.
 
+Now that we have a name and a description, we can submit the package to
+[Packagist](https://packagist.org/).
+
 ##### Drupal Core as a Provider
 Why would anyone want to consume Drupal core? It's not a library!
 
 Drupal core does have it's own dependencies, why not let Composer manage these
-for us?
+for us? If we don't let Composer manage the dependencies, we could end up with
+dependencies that our out of sync (i.e. wrong version of symfony components,
+etc.)
 
 From `core/composer.json`
 ```json
@@ -286,13 +301,83 @@ Now any Drupal project can load Drupal core by adding:
 ```
 *Pro tip:* you can just execute `composer require drupal/drupal ~8.0`
 
-
 This isn't quite right though, if we run `composer install` drupal/core will be
 installed in `vendor/drupal/core`. Drupal does not work in this directory since
 it needs to be in `/core`. To get around this, we'll also require
 `composer/installers`.
 
-Composer Installers
+[Composer Installers](http://composer.github.io/installers/) is a Composer
+plugin that installs packages of a specific type in a specific directory.
+
+In our case `drupal-core` will be installed in `/core`.
+
+Now our `composer.json` will look something like this:
+```json
+{
+  "require": {
+    "composer/installers": "^1.0.20",
+    "drupal/core": "~8.0"
+  }
+}
+```
+
+Normally you would separate the project (Drupal) from the framework
+(Drupal Core). This is what they've done with
+[Symfony](https://github.com/symfony/symfony) (the framework) and [Symfony Standard](https://github.com/symfony/symfony-standard)
+(the project). As well as with [Laravel](https://github.com/laravel/laravel)
+(the project) and [Larval Framework](https://github.com/laravel/framework)
+(the framework). In both of these instances, the project is just a starting
+point.
+
+The "project" is actually denouted by a special composer type:
+```json
+{
+  "type": "project"
+}
+```
+
+Take a look at the `./composer.json` and `./core/composer.json` and you'll see
+what I'm talking about.
+
+###### Proposal #4:
+[#2385387 Permanently split Drupal and Drupal core into seperate repositories](https://www.drupal.org/node/2385387).
+Would bring us in line with other projects and frameworks, but would require a
+re-roll of every patch out there. This isn't going to happen until Drupal 9 at
+the earliest. But it would allow for more than one project/distrobution to be
+be created with the same Drupal core.
+
+Since we can't do that, we'll need to fake it.
+
+###### Proposal #5:
+[#2385387 Create (and maintain) a subtree split of Drupal cores](https://www.drupal.org/node/2385387).
+This is a stop-gap solution. Instead of splitting the repositories, we can
+create and maintain a subtree split of Drupal core. This allows developers
+to consume Drupal core while at the same time maintaining a single repository
+for contributors.
+
+Right now, [tstoeckler](https://www.drupal.org/u/tstoeckler) is maintaining the
+split for the community. Everyone who installs Drupal core with composer will be
+using his split.
+
+The read-only repository should live at: https://drupal.org/project/core
+
+###### Proposal #6:
+**Split each Component into a read only repository.**
+This is where the magic happens. When the Drupal 8 components
+(`core/lib/Drupal/Components`) are split into read-only repositories, then
+other PHP projects can depend on our components. In the same way we depend on
+[Symfony Components](http://symfony.com/components), Symfony could depend on
+Drupal components. Wouldn't it be impressive if other CMSs depended on Drupal
+components?
+
+This is how Drupal can be spread into everything. Just as we have split modules
+into smaller "API" modules, Drupal core can be split into smaller read-only
+"Components". These components can be consumed by any PHP project. The more
+high-quality components that are available, the more likely they will be used
+in libraries. This drives interest in Drupal as a whole. Just as the Symfony
+components being used in Drupal has driven intrest in Symfony as a whole.
+
+
 
 <!--
 # Frameworks
