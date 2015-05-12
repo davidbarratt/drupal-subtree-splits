@@ -380,7 +380,50 @@ high-quality components that are available, the more likely they will be used
 in libraries. This drives interest in Drupal as a whole. Just as the Symfony
 components being used in Drupal has driven intrest in Symfony as a whole.
 
-@TODO Contrib
+##### Contrib (and Modules)
+
+###### Consumers
+
+What if a contrib module wants to depend on 3rd-party library?
+
+Normally, they'd just require it in their `composer.json` file:
+```json
+{
+  "require": {
+    "guzzlehttp/oauth-subscriber": "0.2.*"
+  }
+}
+```
+
+This is great, but how do my users install my module?
+
+Two choices:
+
+[Composer Manager](https://www.drupal.org/project/composer_manager)
+This module is a little "magical". It takes all of the `composer.json` files
+from all of your files and combines them into a single file. This technically
+works, but it can get really complicated if, later, you'd like to modify
+`composer.json` yourself.
+
+Load the whole module with Composer. Since Composer gets the dependencies
+recursively, Composer will download your module(s) as well as your module(s)
+dependencies.
+
+
+####### Drupal Packagist
+Drupal module's version numbers (7.x-1.0) are not compatible with Composer's
+X.Y.Z (or W.X.Y.Z) format. To get around this,
+[Drupal Packagist](https://packagist.drupal-composer.org/) was created which
+translates 7.x-1.0 to 7.1.0. It also lists every module available on Drupal.org
+
+@TODO pain points for Packagist (i.e. webhook)
+@TODO change version numbers for modules to match X.Y.Z
+@TODO move packagist to drupal.org
+
+###### Providers
+
+@TODO Subtree Splits for Contrib? (Modules & Libraries). Hosting these splits on drupal.org
+
 
 <!--
 # Frameworks
