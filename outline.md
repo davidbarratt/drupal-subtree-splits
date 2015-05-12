@@ -2,6 +2,10 @@
 
 ## Outline
 
+### Clarification
+Drupal: Everything except the `/core` folder.
+Drupal core: Everything in the `/core` folder.
+
 ### Dependency Management
 [npm](https://www.npmjs.com/)
 [bower](http://bower.io/)
@@ -56,7 +60,7 @@ This has completely changed the game. No longer are we reinventing the wheel.
 [Composer](https://getcomposer.org) and the
 [PSR-0](http://www.php-fig.org/psr/psr-0/) and
 [PSR-4](http://www.php-fig.org/psr/psr-4/) autoloading standards have allowed
-Drupal to "get off the island". We now use a large number of third-party
+Drupal core to "get off the island". We now use a large number of third-party
 libraries that would have been inaccessible before.
 
 Drupal 8's `core/composer.json` file looks like this:
@@ -219,20 +223,76 @@ dependencies, there is little reason for them being in downloaded packages.
 **Require Drush as a dev dependency**
 You can now install drush on a [per-project basis](http://docs.drush.org/en/master/install/).
 This means drush can be managed the same way PHPUnit, Mink, etc. is managed.
-We should add drush as a dev dependency, so we can ensure that every Drupal
+We should add drush as a dev dependency, so we can ensure that every Drupal core
 contributor is running the same version of drush. The reduces the number of
 variables when attempting to reproduce bugs.
 
 Assuming Propsal #1 & #2 is accepted, we just need to add this to
 `core/composer.json`:
 ```json
-"require-dev": {
-  "drush/drush": "~7.0"
+{
+  "require-dev": {
+    "drush/drush": "~7.0"
+  }
 }
 ```
 
 Because of Propsal #1 & #2, we can install the same version of drush for every
 contributor, but not for every user of Drupal.
+
+#### Provider
+A Provider is a package (typicaly a library) that can be consumed by another
+package. What makes a package a provider? A name.
+```json
+{
+  "name": "guzzlehttp/guzzle",
+}
+```
+(Technially this is all we need, but Packagist requires a description as well).
+```json
+{
+  "name": "guzzlehttp/guzzle",
+  "description": "Guzzle is a PHP HTTP client library and framework for building RESTful web service clients"
+}
+```
+
+It's a good practice to give a name and a description to every package, even if
+it's never going to be consumed.
+
+##### Drupal Core as a Provider
+Why would anyone want to consume Drupal core? It's not a library!
+
+Drupal core does have it's own dependencies, why not let Composer manage these
+for us?
+
+From `core/composer.json`
+```json
+{
+  "name": "drupal/core",
+  "description": "Drupal is an open source content management platform powering millions of websites and applications.",
+  "type": "drupal-core"
+}
+```
+The type tells Composer that this is something other than a library.
+
+Now any Drupal project can load Drupal core by adding:
+```json
+{
+  "require": {
+    "drupal/core": "~8.0"
+  }
+}
+
+```
+*Pro tip:* you can just execute `composer require drupal/drupal ~8.0`
+
+
+This isn't quite right though, if we run `composer install` drupal/core will be
+installed in `vendor/drupal/core`. Drupal does not work in this directory since
+it needs to be in `/core`. To get around this, we'll also require
+`composer/installers`.
+
+Composer Installers
 
 <!--
 # Frameworks
