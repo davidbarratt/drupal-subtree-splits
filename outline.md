@@ -55,6 +55,51 @@ Executing `composer install` will download the `guzzle` into `./vendor`
 Because [Guzzle](http://guzzlephp.org) depends on `guzzlehttp/ringphp` it will
 also download that.
 
+##### Locking Dependencies
+Whenever you run `composer install` for the first time, composer generates a
+`composer.lock` file. This file specifies the precise commit hash of dependency
+you just installed.
+
+From [Composer](http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file):
+"This file locks the dependencies of your project to a known state"
+
+Next time someone runs `composer install`, Composer essentially ignores what is
+in `composer.json` and looks at `composer.lock`. The only time `composer.lock`
+is updated is when running `composer update`.
+
+Composer, however, will warn you when the versions in your lock file are out of
+sync with versions in your json file.
+
+For instance, if you change `guzzlehttp/guzzle` from `~5.0` to `~4.0`, what is
+is in the lock file is technically no longer valid and Composer will throw this
+warning:
+```
+Warning: The lock file is not up to date with the latest changes in
+composer.json. You may be getting outdated dependencies. Run update to update
+them.
+```
+but it still follows the lock file.
+
+Because of the lock file, we can ensure that every developer is running the
+exact same versions of the dependencies as everyone else is.
+
+There are only two files that should be commited to version control:
+```
+composer.json
+```
+and
+```
+composer.lock
+```
+everything else is unnecessary.
+
+*NOTE:* The `composer.lock` file only applies to the current working directory,
+Composer ignores the `composer.lock` in all of your dependencies.
+
+Because of this, many committing the `composer.lock` file is optional and many
+libraries (like Guzzle) do not.
+
+##### Autoloading
 Include the Composer autoloader in your PHP file:
 ```php
 require 'vendor/autoload.php';
@@ -111,50 +156,6 @@ Drupal 8's `core/composer.json` file looks like this:
 
 We can now consume all of these dependencies and all of these libraries'
 dependencies.
-
-##### Locking Dependencies
-Whenever you run `composer install` for the first time, composer generates a
-`composer.lock` file. This file specifies the precise commit hash of dependency
-you just installed.
-
-From [Composer](http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file):
-"This file locks the dependencies of your project to a known state"
-
-Next time someone runs `composer install`, Composer essentially ignores what is
-in `composer.json` and looks at `composer.lock`. The only time `composer.lock`
-is updated is when running `composer update`.
-
-Composer, however, will warn you when the versions in your lock file are out of
-sync with versions in your json file.
-
-For instance, if you change `guzzlehttp/guzzle` from `~5.0` to `~4.0`, what is
-is in the lock file is technically no longer valid and Composer will throw this
-warning:
-```
-Warning: The lock file is not up to date with the latest changes in
-composer.json. You may be getting outdated dependencies. Run update to update
-them.
-```
-but it still follows the lock file.
-
-Because of the lock file, we can ensure that every developer is running the
-exact same versions of the dependencies as everyone else is.
-
-There are only two files that should be commited to version control:
-```
-composer.json
-```
-and
-```
-composer.lock
-```
-everything else is unnecessary.
-
-*NOTE:* The `composer.lock` file only applies to the current working directory,
-Composer ignores the `composer.lock` in all of your dependencies.
-
-Because of this, many committing the `composer.lock` file is optional and many
-libraries (like Guzzle) do not.
 
 ##### Drupal Core as a Consumer
 
@@ -226,7 +227,7 @@ cd core; composer install;
 ```
 and this command for the packaging script:
 ```
-cd core; composer install --no-dev
+cd core; composer install --no-dev;
 ```
 The later command excludes the dependencies in `require-dev`. This makes our
 package smaller and more secure since most Drupal users do not need these
@@ -352,7 +353,7 @@ be created with the same Drupal core.
 Since we can't do that, we'll need to fake it.
 
 ###### Proposal #5:
-[#2385387 Create (and maintain) a subtree split of Drupal cores](https://www.drupal.org/node/2385387).
+[#2352091 Create (and maintain) a subtree split of Drupal cores](https://www.drupal.org/node/2352091).
 This is a stop-gap solution. Instead of splitting the repositories, we can
 create and maintain a subtree split of Drupal core. This allows developers
 to consume Drupal core while at the same time maintaining a single repository
@@ -439,7 +440,7 @@ reference Drupal Packagist in official documentation.
 What if a module would like to provider read-only subtree splits of their cmodules
 and libraries?
 
-###### Proposal #8:
+###### Proposal #9:
 **Allow contrib developers to define subfolders (modules or libraries) that should have
 subtree splits**
 Ideally, these splits should be maintined by a Drupal.org system for the maintainer. This
@@ -448,26 +449,3 @@ the splits on the module and those will be created. These could be sub-module or
 
 This will help drive traffic to Drupal.org by people looking for libraries for their
 PHP project.
-
-<!--
-# Frameworks
-Symfony
-Laravel
-
-# Drupal
-Root Project
-Core
-Components
-Modules
-Contrib
-Packagist
-
-* Other Projects use/maintain subtree splits
-  * Why?
-  * How?
-* Drupal.org should maintain splits of Drupal
-  * Why?
-  * How?
-* Others can use these splits in their own projects
-* Benefits the community can get from offering these splits
--->
