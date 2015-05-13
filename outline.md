@@ -416,14 +416,38 @@ X.Y.Z (or W.X.Y.Z) format. To get around this,
 [Drupal Packagist](https://packagist.drupal-composer.org/) was created which
 translates 7.x-1.0 to 7.1.0. It also lists every module available on Drupal.org
 
-@TODO pain points for Packagist (i.e. webhook)
-@TODO change version numbers for modules to match X.Y.Z
-@TODO move packagist to drupal.org
+###### Proposal #6:
+**Provide a Release Webhook & Better APIs**
+Some pieces of data are scraped from Drupal.org rather than using an API.
+Also, Packagist needs a webhook so they can be notified when a module has a new
+release, rather than checking every single module on a periodic basis.
+
+###### Proposal #7:
+[#1612910 Switch to Semantic Versioning for Drupal contrib extensions (modules, themes, etc)](https://www.drupal.org/node/1612910)
+Rather than translating the version numbers in Drupal Packagist, we could
+just permanently move all contrib modules to follow a X.Y.Z standard (like Core).
+Then we could potentially use the standard Packagist.org, however, that will
+require us publish every module there.
+
+###### Proposal #8:
+Move packagist to packagist.drupal.org. Pretty self-explanatory, make Drupal Packagist an
+official part of Drupal.org. This way we can include it in `./composer.json` and
+reference Drupal Packagist in official documentation.
 
 ###### Providers
 
-@TODO Subtree Splits for Contrib? (Modules & Libraries). Hosting these splits on drupal.org
+What if a module would like to provider read-only subtree splits of their cmodules
+and libraries?
 
+###### Proposal #8:
+**Allow contrib developers to define subfolders (modules or libraries) that should have
+subtree splits**
+Ideally, these splits should be maintined by a Drupal.org system for the maintainer. This
+way there isn't any scripts or anything a maintainer has to run, they can simply define
+the splits on the module and those will be created. These could be sub-module or libraries.
+
+This will help drive traffic to Drupal.org by people looking for libraries for their
+PHP project.
 
 <!--
 # Frameworks
